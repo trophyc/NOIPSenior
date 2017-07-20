@@ -2,7 +2,6 @@
 #include <memory.h>
 #define MAX 20
 
-char lamps[MAX];
 int n;
 
 struct color {
@@ -20,8 +19,8 @@ bool printed = false;
 void Init ();
 void dfs (int usedColors, int ptr, int usedExtraSpace);
 int FindNextColor (int s);
-void PrintArray(int ptr);
 void PrintOutInput ();
+void PrintOne ();
 
 int main ()
 {
@@ -38,6 +37,7 @@ int main ()
    }
    totalExtraSpace = n - sum;
 //printf ("ExtraSpace = %d\n", totalExtraSpace) ; 
+   PrintOne ();
    dfs (0, 0, 0);
    printf ("%d", count);
    return 0;
@@ -58,34 +58,22 @@ void Init ()
       colors++;
    }
 //PrintOutInput();
-   memset (lamps, ' ', sizeof(lamps));
 }
 
 void dfs (int usedColors, int ptr, int usedExtraSpace)
 {
    if (usedColors == colors) {
       count ++;
-      if (!printed) {
-         PrintArray( ptr);
-         printed = true;
-      }
       return;
    }
 
    int allUsableExtra = totalExtraSpace - usedExtraSpace;
    for (int s = 0; s <= allUsableExtra; s++) {
 //printf ("-- %d spaces\n", s);
-      for (int j = 0; j < s; j++) {
-         lamps[ptr+j] = ' ';
-      }
       int i = FindNextColor (0);
 //printf ("\t -- Next color is %d.\n", i);      
       while (i != -1) {
-         int tmpPtr = ptr + s;
-         for (int j = 0; j < input[i].nbr; j++) {
-            lamps[tmpPtr++] = input[i].clr;
-         }
-         lamps[tmpPtr++] = ' ';
+         int tmpPtr = ptr + s + input[i].nbr + 1;
          input[i].used = true;
          dfs (usedColors + 1, tmpPtr, usedExtraSpace + s);
          input[i].used = false;
@@ -105,21 +93,26 @@ int FindNextColor (int start)
    return -1;
 }
 
-void PrintArray (int ptr)
-{
-   for (int i = 0; i < ptr; i++) {
-      printf ("%c", lamps[i]);
-   }
-   for (int i = ptr; i < n; i++) {
-      printf (" ");
-   }
-   printf ("\n");
-}
-
 void PrintOutInput ()
 {
    printf ("%d\n", n);
    for (int i = 0; i < colors; i++) {
       printf ("%c %d\n", input[i].clr, input[i].nbr);
    }   
+}
+
+void PrintOne ()
+{
+   for (int i = 0; i < colors; i++) {
+      for (int j = 0; j < input[i].nbr; j++) {
+         printf ("%c", input[i].clr);
+      }
+      if (i != colors -1) {
+         printf (" ");
+      }
+   }
+   for (int i = 0; i < totalExtraSpace; i++) {
+      printf (" ");
+   }
+   printf ("\n");   
 }
